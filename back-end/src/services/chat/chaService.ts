@@ -34,7 +34,6 @@ class ChatService {
       const record = await ChatMessageModel.find(condition)
         .sort("createdAt")
         .lean();
-      // .exec();
       return record;
     } catch (err: any) {
       console.log(err);

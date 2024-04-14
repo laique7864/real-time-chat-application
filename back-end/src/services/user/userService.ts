@@ -1,17 +1,18 @@
+
 import { UserModel } from "../../../src/models/userModel";
 class UserService {
   DEFAULT_FIELDS: string =
     "firstName lastName userName phone email photo address role verify createdAt updatedAt";
 
   async findRow(conditions: any = [], fields: string = "") {
-
+   
     try {
-      const record = await UserModel.findOne(conditions);
-
+      const record = await UserModel.findOne(conditions)
+        .lean();
       return record;
-    } catch (err: any) {
-      console.log(err);
-
+    } catch (err:any) {
+        console.log(err);
+        
       return false;
     }
   }
@@ -23,7 +24,7 @@ class UserService {
         .lean();
       // .exec();
       return record;
-    } catch (err: any) {
+    } catch (err:any) {
       return false;
     }
   }
@@ -34,8 +35,8 @@ class UserService {
         .sort("-createdAt")
         .lean();
       // .exec();
-      return record;
-    } catch (err: any) {
+     return record;
+    } catch (err:any) {
       console.log(err);
       return false;
     }
@@ -45,8 +46,8 @@ class UserService {
     try {
       await doc.save();
       return doc;
-    } catch (err: any) {
-      if (err) {
+    } catch (err:any) {
+      if (err && err.code === 11000) {
         const duplicateField = Object.keys(err.keyValue)[0];
         const errorMessage = `${duplicateField} already exists.`;
         return errorMessage;
@@ -61,7 +62,7 @@ class UserService {
         new: true,
       });
       return update;
-    } catch (err: any) {
+    } catch (err:any) {
       return false;
     }
   }
@@ -70,7 +71,7 @@ class UserService {
     try {
       const removed = await UserModel.findByIdAndDelete(id, { new: true });
       return removed;
-    } catch (err: any) {
+    } catch (err:any) {
       return false;
     }
   }

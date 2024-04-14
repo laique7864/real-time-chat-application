@@ -31,7 +31,10 @@ class UserController {
 
   async getRows(req: Request, res: Response) {
     try {
-      const records = await userService.findAll();
+      console.log(req.body.userId ,'ResponseResponseResponse');
+      
+      const records = await userService.findAll({ _id: { $ne: req.body.userId } });
+console.log(records);
 
       if (!records) {
         return errorRes(res, "No record found", HttpStatusCode.NOT_FOUND);
@@ -130,7 +133,6 @@ class UserController {
       const { email, userName } = req.body;
 
       let records: any = await userService.findRow(req.body);
-console.log(records);
 
       if (!records) {
     return    errorRes(

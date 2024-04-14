@@ -25,7 +25,7 @@ class AuthHandler {
 
 
     req.query.token = token;
-    req.body.token = token;
+    req.body.userId = isValidToken.userId;
 
     return next();
   };

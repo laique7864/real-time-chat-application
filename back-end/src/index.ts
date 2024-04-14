@@ -33,15 +33,15 @@ var io = require("socket.io")(server, {
 io.on("connection", function (socket:any) {
   console.log("A user connected");
 
-  socket.on("joinRoom", ({ userId, roomId }:any) => {
+  socket.on("joinRoom", ({ senderId, roomId }:any) => {
     socket.join(roomId);
-    console.log(`User ${userId} joined room ${roomId}`);
+    console.log(`User ${senderId} joined room ${roomId}`);
   });
 
-  socket.on("sendMessage", function ({ roomId, message, userId }:any) {
+  socket.on("sendMessage", function ({ roomId, message, senderId }:any) {
     console.log(message);
     
-    io.to(roomId).emit("receiveMessage", { userId, message });
+    io.to(roomId).emit("receiveMessage", { senderId, message });
   });
 
   socket.on("disconnect", function () {
