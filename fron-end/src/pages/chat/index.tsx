@@ -40,7 +40,7 @@ const Chat: React.FC = () => {
 
     getChats();
 
-    socket.emit("joinRoom", { userId: JSON.parse(localStorage.getItem("user") || '{}')._id, roomId:id });
+    socket.emit("joinRoom", { senderId: JSON.parse(localStorage.getItem("user") || '{}')._id, roomId:id });
 
     socket.on("receiveMessage", (data: IMessage) => {
       setChatHistory(prev => [...prev, data]);
@@ -51,16 +51,27 @@ const Chat: React.FC = () => {
     };
   }, [id]);
 
-  const sendChats = () => {
+  const sendChats = async () => {
     const messageData = {
       roomId :id,
       message,
-      userId: JSON.parse(localStorage.getItem("user") || '{}')._id,
+      senderId: JSON.parse(localStorage.getItem("user") || '{}')._id,
     };
     console.log(messageData);
     
     socket.emit("sendMessage", messageData);
     setMessage("");
+
+    const body = {
+      senderId:JSON.parse(localStorage.getItem("user") || '{}')._id,
+      recieverId: id,
+      message,
+    };
+    const res = await axios.post(`${baseUrl}/chat/create`, body, {
+      headers: {
+        Authorization: token,
+      },
+    });
   };
 
   return (
@@ -71,7 +82,7 @@ const Chat: React.FC = () => {
         renderItem={(item: IMessage, index: number) => (
           <List.Item key={index}>
             <List.Item.Meta
-              description={`${item.userId}: ${item.message}`}
+              description={item.message}
             />
           </List.Item>
         )}
@@ -81,6 +92,11 @@ const Chat: React.FC = () => {
           placeholder="Type a message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          prefix={
+            <Button >
+             Upload Image
+            </Button>
+          }
           suffix={
             <Button onClick={sendChats} style={{ color: "blueviolet" }}>
               Send
